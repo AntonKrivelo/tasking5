@@ -1,9 +1,13 @@
+import DataTable from './components/DataTable/DataTable';
+import Container from '@mui/material/Container';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <div>123</div>
+      <Container>
+        <DataTable />
+      </Container>
     </div>
   );
 }
