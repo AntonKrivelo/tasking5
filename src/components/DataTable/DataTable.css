@@ -1,0 +1,5 @@
+.table-btns {
+  background-color: rgb(240, 238, 238);
+  display: flex;
+  column-gap: 20px;
+}

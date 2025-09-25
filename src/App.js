@@ -5,7 +5,12 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <Container>
+      <Container
+        sx={{
+          py: { xs: 5, md: 10 },
+          px: { xs: 1, sm: 2 },
+        }}
+      >
         <DataTable />
       </Container>
     </div>
