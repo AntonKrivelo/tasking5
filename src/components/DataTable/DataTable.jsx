@@ -50,14 +50,40 @@ export default function DataTable() {
     setSelectDeleteUser([]);
   };
 
+  const handleBlockUser = () => {
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        selectDeleteUser.includes(row.id) ? { ...row, Status: 'blocked' } : row,
+      ),
+    );
+  };
+
+  const handleUnblockUser = () => {
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        selectDeleteUser.includes(row.id) ? { ...row, Status: 'active' } : row,
+      ),
+    );
+  };
+
   return (
     <div>
       <Paper sx={{ width: '100%', p: 1 }}>
         <div className="table-btns">
-          <Button variant="outlined" startIcon={<LockIcon />}>
+          <Button
+            onClick={handleBlockUser}
+            disabled={selectDeleteUser.length === 0}
+            variant="outlined"
+            startIcon={<LockIcon />}
+          >
             Block
           </Button>
-          <Button variant="outlined" startIcon={<LockOpenIcon />}>
+          <Button
+            onClick={handleUnblockUser}
+            disabled={selectDeleteUser.length === 0}
+            variant="outlined"
+            startIcon={<LockOpenIcon />}
+          >
             Unblock
           </Button>
           <Button
