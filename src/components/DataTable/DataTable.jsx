@@ -15,15 +15,34 @@ const columns = [
   { field: 'LastSeen', headerName: 'LastSeen', width: 150 },
 ];
 
+const initialTempData = [
+  {
+    id: '1',
+    Name: 'Snow',
+    Email: 'ansda23@gmail.com',
+    Status: false,
+    LastSeen: '1min ago',
+  },
+  {
+    id: '2',
+    Name: 'Lannister',
+    Email: 'sadasd2@gmail.com',
+    Status: false,
+    LastSeen: '3min ago',
+  },
+  {
+    id: '3',
+    Name: 'Lannister',
+    Email: '123@gmail.com',
+    Status: true,
+    LastSeen: '5min ago',
+  },
+];
+
 const paginationModel = { page: 0, pageSize: 5 };
 
 export default function DataTable() {
-  const [rows, setRows] = useState([
-    { id: '1', Name: 'Snow', Email: 'ansda23@gmail.com', Status: false, LastSeen: '1min ago' },
-    { id: '2', Name: 'Lannister', Email: 'sadasd2@gmail.com', Status: false, LastSeen: '3min ago' },
-    { id: '3', Name: 'Lannister', Email: '123@gmail.com', Status: true, LastSeen: '5min ago' },
-  ]);
-
+  const [rows, setRows] = useState(initialTempData);
   const [selectDeleteUser, setSelectDeleteUser] = useState([]);
 
   const handleDeleteUser = () => {
@@ -52,15 +71,26 @@ export default function DataTable() {
             Delete
           </Button>
         </div>
-
         <DataGrid
           rows={rows}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
-          // rowSelectionModel={selectDeleteUser}
-          // onRowSelectionModelChange={(newSelection) => setSelectDeleteUser(newSelection)}
+          onRowSelectionModelChange={({ ids, type }) => {
+            if (type === 'include') {
+              setSelectDeleteUser([...ids]);
+            }
+            if (type === 'exclude') {
+              const excludedIds = [...ids];
+              const deletRows = rows
+                .filter((r) => {
+                  return !excludedIds.includes(r.id);
+                })
+                .map(({ id }) => id);
+              setSelectDeleteUser([...deletRows]);
+            }
+          }}
           sx={{
             border: 0,
             height: 400,
