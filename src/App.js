@@ -1,20 +1,23 @@
+import { Routes, Route, NavLink } from 'react-router-dom';
 import DataTable from './components/DataTable/DataTable';
-import Container from '@mui/material/Container';
-import './App.css';
+import Register from './components/Register/Register';
+import Login from './components/Login/Login';
+import Verify from './components/Verify/Verify';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <Container
-        sx={{
-          py: { xs: 5, md: 10 },
-          px: { xs: 1, sm: 2 },
-        }}
-      >
-        <DataTable />
-      </Container>
+    <div>
+      <nav style={{ padding: '10px', background: '#f5f5f5' }}>
+        <NavLink to="/register">Register</NavLink> | <NavLink to="/login">Login</NavLink> |{' '}
+        <NavLink to="/admin">Admin Panel</NavLink>
+      </nav>
+
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/verify/:id" element={<Verify />} />
+        <Route path="/admin" element={<DataTable />} />
+      </Routes>
     </div>
   );
 }
-
-export default App;
