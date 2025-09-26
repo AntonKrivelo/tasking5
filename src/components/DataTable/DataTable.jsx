@@ -9,21 +9,19 @@ import { Navigate } from 'react-router-dom';
 import './DataTable.css';
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
+  { field: 'id', headerName: 'ID', width: 150 },
   { field: 'Name', headerName: 'Name', width: 230 },
-  { field: 'Email', headerName: 'Email', width: 230 },
+  { field: 'Email', headerName: 'Email', width: 250 },
   { field: 'Status', headerName: 'Status', width: 150 },
-  { field: 'LastSeen', headerName: 'LastSeen', width: 150 },
+  { field: 'LastSeen', headerName: 'LastSeen', width: 250 },
 ];
 
 const paginationModel = { page: 0, pageSize: 5 };
 
 export default function DataTable() {
-  // хуки всегда в начале компонента
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
 
-  // загрузка пользователей из localStorage
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const formatted = users.map((u) => ({
@@ -38,7 +36,6 @@ export default function DataTable() {
 
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  // редирект если пользователь не авторизован или не активен
   if (
     !currentUser ||
     currentUser.status !== 'active' ||
@@ -48,14 +45,13 @@ export default function DataTable() {
     return <Navigate to="/login" replace />;
   }
 
-  // обновление таблицы и localStorage
   const updateRows = (newRows) => {
     setRows(newRows);
     const users = newRows.map((r) => ({
       id: r.id,
       name: r.Name,
       email: r.Email,
-      password: '', // пароль не отображаем
+      password: '',
       status: r.Status,
       deleted: r.Status === 'deleted',
       lastSeen: r.LastSeen,

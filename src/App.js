@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import DataTable from './components/DataTable/DataTable';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
@@ -17,7 +17,6 @@ export default function App() {
         </NavLink>
         <NavLink to="/admin">Admin Panel</NavLink>
       </nav>
-
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
