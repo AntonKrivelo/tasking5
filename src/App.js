@@ -3,22 +3,7 @@ import DataTable from './components/DataTable/DataTable';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Verify from './components/Verify/Verify';
-
-function PrivateRoute({ children }) {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-  if (!currentUser) {
-    return <Navigate to="/login" />;
-  }
-  if (currentUser.status !== 'active') {
-    return <Navigate to="/login" />;
-  }
-  if (currentUser.deleted || currentUser.status === 'blocked') {
-    return <Navigate to="/login" />;
-  }
-
-  return children;
-}
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 export default function App() {
   return (

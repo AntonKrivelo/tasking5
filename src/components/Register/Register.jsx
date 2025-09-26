@@ -16,7 +16,6 @@ export default function Register() {
 
     let users = JSON.parse(localStorage.getItem('users')) || [];
 
-    // удалённые могут регистрироваться заново
     users = users.filter((u) => !(u.email === form.email && u.deleted));
 
     if (users.some((u) => u.email === form.email)) {
@@ -33,12 +32,11 @@ export default function Register() {
       deleted: false,
     };
 
-    const updatedUsers = [...users, newUser]; // ✅ без мутации
+    const updatedUsers = [...users, newUser];
     localStorage.setItem('users', JSON.stringify(updatedUsers));
 
     setMessage('Регистрация успешна! Подтвердите email (ссылка в консоли).');
 
-    // имитация письма
     console.log(`Письмо отправлено: http://localhost:3000/verify/${newUser.id}`);
 
     setTimeout(() => navigate('/login'), 2000);

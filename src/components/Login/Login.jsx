@@ -14,12 +14,17 @@ export default function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find((u) => u.email === form.email && u.password === form.password);
+    const userIndex = users.findIndex(
+      (u) => u.email === form.email && u.password === form.password,
+    );
 
-    if (!user) {
+    if (userIndex === -1) {
       setMessage('Неверный email или пароль');
       return;
     }
+
+    const user = users[userIndex];
+
     if (user.status === 'unverified') {
       setMessage('Подтвердите email перед входом.');
       return;
@@ -33,11 +38,14 @@ export default function Login() {
       return;
     }
 
-    // ✅ сохраняем текущего пользователя
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    const now = new Date().toLocaleString();
+    users[userIndex] = { ...user, lastSeen: now };
+    localStorage.setItem('users', JSON.stringify(users));
+
+    localStorage.setItem('currentUser', JSON.stringify(users[userIndex]));
 
     setMessage('Успешный вход!');
-    setTimeout(() => navigate('/admin'), 1000);
+    navigate('/admin');
   };
 
   return (
