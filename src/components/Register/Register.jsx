@@ -11,39 +11,70 @@ export default function Register() {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   let users = JSON.parse(localStorage.getItem('users')) || [];
+
+  //   users = users.filter((u) => !(u.email === form.email && u.deleted));
+
+  //   if (users.some((u) => u.email === form.email)) {
+  //     setMessage('Пользователь с таким email уже существует!');
+  //     return;
+  //   }
+
+  // const newUser = {
+  //   id: Date.now().toString(),
+  //   name: form.name,
+  //   email: form.email,
+  //   password: form.password,
+  //   status: 'unverified',
+  //   deleted: false
+  // };
+
+  //   const updatedUsers = [...users, newUser];
+  //   localStorage.setItem('users', JSON.stringify(updatedUsers));
+
+  //   setMessage(
+  //     'Регистрация прошла успешна! Подтвердите email (ссылка в консоли).'
+  //   );
+
+  //   console.log(
+  //     `Письмо отправлено: http://localhost:4000/verify/${newUser.id}`
+  //   );
+
+  //   setTimeout(() => navigate('/login'), 2000);
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
 
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-
-    users = users.filter((u) => !(u.email === form.email && u.deleted));
-
-    if (users.some((u) => u.email === form.email)) {
-      setMessage('Пользователь с таким email уже существует!');
-      return;
-    }
-
-    const newUser = {
-      id: Date.now().toString(),
-      name: form.name,
-      email: form.email,
-      password: form.password,
-      status: 'unverified',
-      deleted: false,
-    };
-
-    const updatedUsers = [...users, newUser];
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-
-    setMessage('Регистрация успешна! Подтвердите email (ссылка в консоли).');
-
-    console.log(`Письмо отправлено: http://localhost:3000/verify/${newUser.id}`);
-
-    setTimeout(() => navigate('/login'), 2000);
+    fetch('http://localhost:4000/', {
+      method: 'POST', // Явно указываем метод POST
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(form)
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error('Ошибка:', error);
+      });
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '80vh' }}>
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: '80vh' }}
+    >
       <Grid item xs={10} sm={6} md={4}>
         <Box
           component="form"
@@ -53,7 +84,7 @@ export default function Register() {
             border: '1px solid #ddd',
             borderRadius: 2,
             boxShadow: 2,
-            bgcolor: 'white',
+            bgcolor: 'white'
           }}
         >
           <Typography variant="h5" align="center" gutterBottom>
@@ -61,7 +92,12 @@ export default function Register() {
           </Typography>
 
           <Stack spacing={2}>
-            <TextField label="Name" value={form.name} onChange={handleChange('name')} fullWidth />
+            <TextField
+              label="Name"
+              value={form.name}
+              onChange={handleChange('name')}
+              fullWidth
+            />
             <TextField
               label="Email"
               type="email"
@@ -82,7 +118,12 @@ export default function Register() {
           </Stack>
 
           {message && (
-            <Typography variant="body2" color="primary" align="center" sx={{ mt: 2 }}>
+            <Typography
+              variant="body2"
+              color="primary"
+              align="center"
+              sx={{ mt: 2 }}
+            >
               {message}
             </Typography>
           )}

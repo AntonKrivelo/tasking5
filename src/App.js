@@ -6,6 +6,18 @@ import Verify from './components/Verify/Verify';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 export default function App() {
+  // fetch('http://localhost:4000/')
+  //   .then((res) => {
+  //     return res.json();
+  //   })
+  //   .then((res) => {
+  //     console.log(res.data);
+  //   });
+
+  // axios.get('http://localhost:4000/').then((response) => {
+  //   console.log(response.data); // Ответ сервера (данные) находится здесь
+  // });
+
   return (
     <div>
       <nav style={{ padding: '10px', background: '#f5f5f5' }}>
