@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Grid, Box, Typography, Stack } from '@mui/material';
+import { TextField, Button, Grid, Box, Typography } from '@mui/material';
+import { useForm } from 'react-hook-form';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -15,7 +16,7 @@ export default function Login() {
     e.preventDefault();
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const userIndex = users.findIndex(
-      (u) => u.email === form.email && u.password === form.password,
+      (u) => u.email === form.email && u.password === form.password
     );
 
     if (userIndex === -1) {
@@ -48,48 +49,96 @@ export default function Login() {
     navigate('/admin');
   };
 
+  const handleRegister = async (formData) => {
+    try {
+      const response = await fetch('http://localhost:4000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+
+      const data = await response.json();
+      console.log('success:', data);
+
+      setMessage('Успешный вход!');
+      navigate('/admin');
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm();
+
+  const onSubmit = (data) => {
+    handleRegister(data);
+  };
+
   return (
-    <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '80vh' }}>
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: '80vh' }}
+    >
       <Grid item xs={10} sm={6} md={4}>
         <Box
-          component="form"
+          component="div"
           onSubmit={handleLogin}
           sx={{
             p: 3,
             border: '1px solid #ddd',
             borderRadius: 2,
             boxShadow: 2,
-            bgcolor: 'white',
+            bgcolor: 'white'
           }}
         >
           <Typography variant="h5" align="center" gutterBottom>
             Login
           </Typography>
-
-          <Stack spacing={2}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
+              {...register('email', { required: 'is required' })}
+              id="outlined-email"
               label="Email"
-              type="email"
-              value={form.email}
-              onChange={handleChange('email')}
+              variant="outlined"
               fullWidth
+              margin="normal"
             />
+
             <TextField
+              {...register('password', { required: 'is required' })}
+              id="outlined-password"
               label="Password"
               type="password"
-              value={form.password}
-              onChange={handleChange('password')}
+              variant="outlined"
               fullWidth
+              margin="normal"
             />
-            <Button type="submit" variant="contained">
-              Войти
+
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              sx={{ mt: 2, py: 1.2, fontSize: '16px', fontWeight: 'bold' }}
+            >
+              Submit
             </Button>
-          </Stack>
+          </form>
 
           {message && (
             <Typography
               variant="body2"
-              color={message.includes('успеш') ? 'green' : 'error'}
+              color={message.includes('успешно') ? 'green' : 'error'}
               align="center"
               sx={{ mt: 2 }}
             >

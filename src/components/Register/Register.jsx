@@ -1,56 +1,27 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button, Grid, TextField, Typography, Box, Stack } from '@mui/material';
 
 export default function Register() {
+  // fetch('http://localhost:4000/register')
+  //   .then((res) => {
+  //     return res.json();
+  //   })
+  //   .then((res) => {
+  //     console.log(res.data);
+  //   });
+
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
-  const navigate = useNavigate();
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   let users = JSON.parse(localStorage.getItem('users')) || [];
-
-  //   users = users.filter((u) => !(u.email === form.email && u.deleted));
-
-  //   if (users.some((u) => u.email === form.email)) {
-  //     setMessage('Пользователь с таким email уже существует!');
-  //     return;
-  //   }
-
-  // const newUser = {
-  //   id: Date.now().toString(),
-  //   name: form.name,
-  //   email: form.email,
-  //   password: form.password,
-  //   status: 'unverified',
-  //   deleted: false
-  // };
-
-  //   const updatedUsers = [...users, newUser];
-  //   localStorage.setItem('users', JSON.stringify(updatedUsers));
-
-  //   setMessage(
-  //     'Регистрация прошла успешна! Подтвердите email (ссылка в консоли).'
-  //   );
-
-  //   console.log(
-  //     `Письмо отправлено: http://localhost:4000/verify/${newUser.id}`
-  //   );
-
-  //   setTimeout(() => navigate('/login'), 2000);
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
 
-    fetch('http://localhost:4000/', {
+    fetch('http://localhost:4000/register', {
       method: 'POST', // Явно указываем метод POST
       headers: {
         'Content-Type': 'application/json'
@@ -62,6 +33,12 @@ export default function Register() {
       })
       .then((data) => {
         console.log(data);
+      })
+      .then((data) => {
+        console.log(data);
+        setMessage(
+          'Registration successful! Check your email to verify your account.'
+        );
       })
       .catch((error) => {
         console.error('Ошибка:', error);
