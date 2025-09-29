@@ -2,16 +2,9 @@ import { useState } from 'react';
 import { Button, Grid, TextField, Typography, Box, Stack } from '@mui/material';
 
 export default function Register() {
-  // fetch('http://localhost:4000/register')
-  //   .then((res) => {
-  //     return res.json();
-  //   })
-  //   .then((res) => {
-  //     console.log(res.data);
-  //   });
-
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -20,29 +13,25 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    setError('');
 
-    fetch('http://localhost:4000/register', {
-      method: 'POST', // Явно указываем метод POST
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(form)
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .then((data) => {
-        console.log(data);
-        setMessage(
-          'Registration successful! Check your email to verify your account.'
-        );
-      })
-      .catch((error) => {
-        console.error('Ошибка:', error);
+    try {
+      const res = await fetch('http://localhost:4000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
       });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      setMessage(data.message);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -102,6 +91,17 @@ export default function Register() {
               sx={{ mt: 2 }}
             >
               {message}
+            </Typography>
+          )}
+
+          {error && (
+            <Typography
+              variant="body2"
+              color="error"
+              align="center"
+              sx={{ mt: 2 }}
+            >
+              {error}
             </Typography>
           )}
         </Box>

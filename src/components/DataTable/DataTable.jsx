@@ -62,6 +62,35 @@ export default function DataTable() {
     );
   };
 
+  const handleDeleteUser = async () => {
+    try {
+      for (const id of selectedRows) {
+        const user = rows.find((r) => r.id === id);
+        if (!user) continue;
+
+        const res = await fetch(
+          `http://localhost:4000/admin/users/${user.Email}`,
+          {
+            method: 'DELETE'
+          }
+        );
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Ошибка при удалении пользователя');
+        }
+      }
+
+      setRows((prevRows) =>
+        prevRows.filter((row) => !selectedRows.includes(row.id))
+      );
+      setSelectedRows([]);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
   if (!currentUser || currentUser.status !== 'active') {
@@ -90,7 +119,7 @@ export default function DataTable() {
           Unblock
         </Button>
         <Button
-          // onClick={deleteUser}
+          // onClick={handleDeleteUser}
           disabled={selectedRows.length === 0}
           variant="outlined"
           color="error"
