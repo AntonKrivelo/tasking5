@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Button, Grid, TextField, Typography, Box, Stack } from '@mui/material';
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -16,7 +18,7 @@ export default function Register() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:4000/register', {
+      const res = await fetch('http://localhost:4001/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -27,8 +29,8 @@ export default function Register() {
       if (!res.ok) {
         throw new Error(data.error || 'Something went wrong');
       }
-
       setMessage(data.message);
+      navigate('login');
     } catch (err) {
       setError(err.message);
     }

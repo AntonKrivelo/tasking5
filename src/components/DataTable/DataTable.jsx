@@ -1,51 +1,47 @@
-import { DataGrid } from '@mui/x-data-grid';
 import { useState, useEffect } from 'react';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
-import { Navigate } from 'react-router-dom';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import LockIcon from '@mui/icons-material/Lock';
+import { DataGrid } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100 },
-  { field: 'Name', headerName: 'Name', width: 200 },
-  { field: 'Email', headerName: 'Email', width: 200 },
-  { field: 'Status', headerName: 'Status', width: 150 },
-  { field: 'LastSeen', headerName: 'LastSeen', width: 180 }
+  { field: 'name', headerName: 'Name', width: 200 },
+  { field: 'email', headerName: 'Email', width: 200 },
+  { field: 'status', headerName: 'Status', width: 150 },
+  { field: 'last_login', headerName: 'LastSeen', width: 280 }
 ];
 
 export default function DataTable() {
-  const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://localhost:4001/users');
+
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const data = await response.json();
+      console.log(data);
+      setUsers(data.users);
+    } catch (err) {
+      console.error('Error:', err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch('http://localhost:4000/admin/users/');
-        console.log(res);
-        if (!res.ok) throw new Error('Ошибка загрузки пользователей');
-        const users = await res.json();
-
-        const formatted = users.map((u) => ({
-          id: u.id,
-          Name: u.name,
-          Email: u.email,
-          Status: u.status,
-          LastSeen: u.lastSeen || '—'
-        }));
-
-        setRows(formatted);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     fetchUsers();
   }, []);
 
   const handleBlockUser = () => {
-    setRows((prevRows) =>
+    setUsers((prevRows) =>
       prevRows.map((row) =>
         selectedRows.includes(row.id) ? { ...row, Status: 'blocked' } : row
       )
@@ -53,47 +49,12 @@ export default function DataTable() {
   };
 
   const handleUnblockUser = () => {
-    setRows((prevRows) =>
+    setUsers((prevRows) =>
       prevRows.map((row) =>
         selectedRows.includes(row.id) ? { ...row, Status: 'active' } : row
       )
     );
   };
-
-  const handleDeleteUser = async () => {
-    try {
-      for (const id of selectedRows) {
-        const user = rows.find((r) => r.id === id);
-        if (!user) continue;
-
-        const res = await fetch(
-          `http://localhost:4000/admin/users/${user.Email}`,
-          {
-            method: 'DELETE'
-          }
-        );
-
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || 'Ошибка при удалении пользователя');
-        }
-      }
-
-      setRows((prevRows) =>
-        prevRows.filter((row) => !selectedRows.includes(row.id))
-      );
-      setSelectedRows([]);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
-  };
-
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-  if (!currentUser || currentUser.status !== 'active') {
-    return <Navigate to="/login" replace />;
-  }
 
   return (
     <Paper sx={{ width: '100%', p: 1 }}>
@@ -126,13 +87,17 @@ export default function DataTable() {
           Delete
         </Button>
       </div>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        onRowSelectionModelChange={(ids) => setSelectedRows(ids)}
-      />
+      {!isLoading ? (
+        <DataGrid
+          rows={users}
+          columns={columns}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          onRowSelectionModelChange={(ids) => setSelectedRows(ids)}
+        />
+      ) : (
+        <>Loading</>
+      )}
     </Paper>
   );
 }

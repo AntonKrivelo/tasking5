@@ -4,7 +4,6 @@ import DataTable from './components/DataTable/DataTable';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Verify from './components/Verify/Verify';
-import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 export default function App() {
   return (
@@ -38,14 +37,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/verify/:id" element={<Verify />} />
-          <Route
-            path="/admin"
-            element={
-              <PrivateRoute>
-                <DataTable />
-              </PrivateRoute>
-            }
-          />
+          <Route path="/admin" element={<DataTable />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Container>
