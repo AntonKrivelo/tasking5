@@ -19,7 +19,6 @@ export default function DataTable() {
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
 
-  // Загружаем пользователей с бэка
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -45,7 +44,6 @@ export default function DataTable() {
     fetchUsers();
   }, []);
 
-  // Блокировка и разблокировка локально
   const handleBlockUser = () => {
     setRows((prevRows) =>
       prevRows.map((row) =>
