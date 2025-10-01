@@ -5,6 +5,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import { useNavigate } from 'react-router';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100 },
@@ -14,20 +15,46 @@ const columns = [
   { field: 'last_login', headerName: 'LastSeen', width: 280 }
 ];
 
+const fetchDeleteUser = async (ids) => {
+  await fetch('http://localhost:4000/users', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ids
+    })
+  });
+};
+
+const fetchUpdateStatus = async ({ ids, status }) => {
+  await fetch('http://localhost:4000/users/status', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ids,
+      status
+    })
+  });
+};
+
 export default function DataTable() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const loginUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const navigate = useNavigate();
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:4001/users');
+      const response = await fetch('http://localhost:4000/users');
 
       if (!response.ok) {
         throw new Error('Error');
       }
       const data = await response.json();
-      console.log(data);
       setUsers(data.users);
     } catch (err) {
       console.error('Error:', err.message);
@@ -37,23 +64,88 @@ export default function DataTable() {
   };
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/users/${loginUser.id}`
+        );
+        if (!response.ok) {
+          throw new Error('Error');
+        }
+        const { user } = await response.json();
+        if (!user || user.status !== 'active') {
+          navigate('/login');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchUserData();
+  });
+
+  useEffect(() => {
     fetchUsers();
   }, []);
 
-  const handleBlockUser = () => {
-    setUsers((prevRows) =>
-      prevRows.map((row) =>
-        selectedRows.includes(row.id) ? { ...row, Status: 'blocked' } : row
-      )
-    );
+  const handleBlockUser = async () => {
+    try {
+      setIsLoading(true);
+      await fetchUpdateStatus({ ids: selectedRows, status: 'blocked' });
+      setUsers((prevRows) =>
+        prevRows.map((row) =>
+          selectedRows.includes(row.id) ? { ...row, status: 'blocked' } : row
+        )
+      );
+      setSelectedRows([]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleUnblockUser = () => {
-    setUsers((prevRows) =>
-      prevRows.map((row) =>
-        selectedRows.includes(row.id) ? { ...row, Status: 'active' } : row
-      )
-    );
+  const handleUnblockUser = async () => {
+    try {
+      setIsLoading(true);
+      await fetchUpdateStatus({ ids: selectedRows, status: 'active' });
+      setUsers((prevRows) =>
+        prevRows.map((row) =>
+          selectedRows.includes(row.id) ? { ...row, status: 'active' } : row
+        )
+      );
+      setSelectedRows([]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOnRowSelectionModelChange = ({ type, ids }) => {
+    if (type === 'include') {
+      setSelectedRows([...ids]);
+    }
+    console.log({ type, ids });
+    if (type === 'exclude') {
+      const selectedUsers = users
+        .filter(({ id }) => ![...ids].includes(id))
+        .map(({ id }) => id);
+      setSelectedRows(selectedUsers);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      setIsLoading(true);
+      await fetchDeleteUser(selectedRows);
+      setUsers(users.filter((e) => !selectedRows?.includes(e?.id)));
+      setSelectedRows([]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -78,7 +170,7 @@ export default function DataTable() {
           Unblock
         </Button>
         <Button
-          // onClick={handleDeleteUser}
+          onClick={handleDeleteUser}
           disabled={selectedRows.length === 0}
           variant="outlined"
           color="error"
@@ -93,7 +185,9 @@ export default function DataTable() {
           columns={columns}
           pageSizeOptions={[5, 10]}
           checkboxSelection
-          onRowSelectionModelChange={(ids) => setSelectedRows(ids)}
+          onRowSelectionModelChange={(rows) =>
+            handleOnRowSelectionModelChange(rows)
+          }
         />
       ) : (
         <>Loading</>

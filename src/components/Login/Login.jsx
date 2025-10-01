@@ -9,7 +9,7 @@ export default function Login() {
 
   const handleLogin = async (formData) => {
     try {
-      const response = await fetch('http://localhost:4001/login', {
+      const response = await fetch('http://localhost:4000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -22,6 +22,10 @@ export default function Login() {
       if (!response.ok || responseData.error) {
         throw new Error(responseData.error);
       }
+
+      localStorage.setItem('token', responseData.token);
+      localStorage.setItem('user', JSON.stringify(responseData.user));
+
       navigate('/admin');
     } catch (error) {
       setSubmittingError(error.message);

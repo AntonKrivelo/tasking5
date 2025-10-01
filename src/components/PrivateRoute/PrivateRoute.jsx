@@ -1,10 +1,11 @@
 import { Navigate } from 'react-router-dom';
 
 export default function PrivateRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem('currentUser'));
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  if (!user || user.status !== 'active') {
-    return <Navigate to="/login" replace />;
+  if (!token || user.status !== 'active') {
+    return <Navigate to="/login" />;
   }
 
   return children;
