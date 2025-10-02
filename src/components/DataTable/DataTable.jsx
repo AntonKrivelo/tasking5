@@ -73,7 +73,10 @@ export default function DataTable() {
           throw new Error('Error');
         }
         const { user } = await response.json();
-        if (!user || user.status !== 'active') {
+        if (
+          !user ||
+          !(user.status === 'active' || user.status === 'unverified')
+        ) {
           navigate('/login');
         }
       } catch (e) {

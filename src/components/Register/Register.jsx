@@ -30,7 +30,7 @@ export default function Register() {
         throw new Error(data.error || 'Something went wrong');
       }
       setMessage(data.message);
-      navigate('login');
+      navigate('/login');
     } catch (err) {
       setError(err.message);
     }
