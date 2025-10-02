@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { Button, Grid, TextField, Typography, Box, Stack } from '@mui/material';
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [registered, setRegistered] = useState(false); // новый флаг
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -26,11 +25,10 @@ export default function Register() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong');
-      }
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+
       setMessage(data.message);
-      navigate('/login');
+      setRegistered(true);
     } catch (err) {
       setError(err.message);
     }
@@ -59,40 +57,36 @@ export default function Register() {
             Registration
           </Typography>
 
-          <Stack spacing={2}>
-            <TextField
-              label="Name"
-              value={form.name}
-              onChange={handleChange('name')}
-              fullWidth
-            />
-            <TextField
-              label="Email"
-              type="email"
-              value={form.email}
-              onChange={handleChange('email')}
-              fullWidth
-            />
-            <TextField
-              label="Password"
-              type="password"
-              value={form.password}
-              onChange={handleChange('password')}
-              fullWidth
-            />
-            <Button type="submit" variant="contained">
-              Register
-            </Button>
-          </Stack>
-
-          {message && (
-            <Typography
-              variant="body2"
-              color="primary"
-              align="center"
-              sx={{ mt: 2 }}
-            >
-              {message}
+          {!registered ? (
+            <Stack spacing={2}>
+              <TextField
+                label="Name"
+                value={form.name}
+                onChange={handleChange('name')}
+                fullWidth
+              />
+              <TextField
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={handleChange('email')}
+                fullWidth
+              />
+              <TextField
+                label="Password"
+                type="password"
+                value={form.password}
+                onChange={handleChange('password')}
+                fullWidth
+              />
+              <Button type="submit" variant="contained">
+                Register
+              </Button>
+            </Stack>
+          ) : (
+            <Typography variant="body1" color="primary" align="center">
+              {message} <br />
+              After activation via email, you will be able to log in.
             </Typography>
           )}
 
