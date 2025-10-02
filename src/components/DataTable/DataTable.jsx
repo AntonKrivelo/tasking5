@@ -16,7 +16,7 @@ const columns = [
 ];
 
 const fetchDeleteUser = async (ids) => {
-  await fetch('http://localhost:4000/users', {
+  await fetch(`${process.env.REACT_APP_API_URL}/users`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ const fetchDeleteUser = async (ids) => {
 };
 
 const fetchUpdateStatus = async ({ ids, status }) => {
-  await fetch('http://localhost:4000/users/status', {
+  await fetch(`${process.env.REACT_APP_API_URL}/users/status`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ export default function DataTable() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:4000/users');
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users`);
 
       if (!response.ok) {
         throw new Error('Error');
@@ -67,7 +67,7 @@ export default function DataTable() {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/users/${loginUser.id}`
+          `${process.env.REACT_APP_API_URL}/users/${loginUser.id}`
         );
         if (!response.ok) {
           throw new Error('Error');
